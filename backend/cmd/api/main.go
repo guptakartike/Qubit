@@ -1,14 +1,14 @@
 package main
 
 import (
-
 	"fmt"
 
 	"os"
 	"strconv"
 
+	"github.com/guptakartike/qubit/internal/database"
+	"github.com/guptakartike/qubit/internal/server"
 	"github.com/joho/godotenv"
-	"github.com/guptakartike/qubit/cmd/internal/server"
 )
 
 
@@ -32,10 +32,27 @@ func main(){
 	
 	fmt.Println("Qubit api running on http://localhost:"+port)
 
+
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		panic("DATABASE_URL environment variable is not set")
+	}
+
+	
+	pgxPool,err:= database.NewPool(databaseURL)
+	if err!=nil{
+		panic("Pool connection failed: "+err.Error())
+	}
+	defer pgxPool.Close()
+	fmt.Println("Database coonection Succesful")
+	
+
 	err = srv.ListenAndServe()
 	if err!=nil{
 		panic(err)
 	}
 
 	
+
+
 }
