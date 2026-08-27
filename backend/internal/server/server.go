@@ -1,38 +1,53 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintln(w, "Qubit is running")
+// RouteRegistrar is implemented by any handler that can register its routes
+// onto a Gin router. This keeps the server package decoupled from concrete
+// handler types.
+type RouteRegistrar interface {
+	RegisterRoutes(router gin.IRouter)
 }
 
-func healthHandler(w http.ResponseWriter, r *http.Request){
-	response:= map[string]string{
-		"status":"ok",
-		"service":"qubit-api",
+// maxBytesMiddleware limits incoming request body size to 1 MB.
+// This prevents memory exhaustion from oversized bodies on all API routes.
+func maxBytesMiddleware(limit int64) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, limit)
+		c.Next()
 	}
-
-	w.Header().Set("Content-Type","application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
-
 }
 
-func New(port int) *http.Server{
-	mux:=http.NewServeMux()
-	mux.HandleFunc("/api/v1/",homeHandler)
-	mux.HandleFunc("/api/v1/health",healthHandler)
+func New(
+	port int,
+	registrars ...RouteRegistrar,
+) *http.Server {
+	router := gin.Default()
+
+	router.Use(maxBytesMiddleware(1 << 20)) // 1 MB
+
+	router.GET("/api/v1/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Qubit is running")
+	})
+
+	router.GET("/api/v1/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "ok",
+			"service": "qubit-api",
+		})
+	})
+
+	for _, r := range registrars {
+		r.RegisterRoutes(router)
+	}
 
 	return &http.Server{
-		Addr:fmt.Sprintf(":%d",port),
-		Handler:mux,
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: router,
 	}
-
-	
-
-	
 }

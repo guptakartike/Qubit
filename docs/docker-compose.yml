@@ -1,0 +1,18 @@
+# Qubit local development services.
+# Infrastructure is intentionally kept minimal while the project is resume/local-first.
+# Add services only when the corresponding milestone requires them.
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: qubit
+      POSTGRES_USER: qubit
+      POSTGRES_PASSWORD: qubit
+    ports:
+      - "5432:5432"
+    volumes:
+      - qubit_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  qubit_postgres_data:

@@ -1,22 +1,19 @@
-# Contributing
+# Contributing to Qubit
 
-This project follows professional software engineering practices.
+Qubit follows a lightweight professional development workflow.
 
 ---
 
 ## Git Workflow
 
-Never commit directly to `main`.
+Prefer feature branches rather than committing directly to `main`.
 
-Create a feature branch.
+Examples:
 
-Example:
-
-```
-feature/authentication
-
+```text
+feature/auth-registration
+feature/auth-login
 feature/workspaces
-
 feature/task-board
 ```
 
@@ -24,24 +21,48 @@ feature/task-board
 
 ## Commit Convention
 
-Examples:
+Use conventional-style commit messages:
 
+```text
+feat(auth): implement user registration
+feat(auth): implement login
+fix(auth): translate duplicate email error
+refactor(auth): simplify registration service
+test(auth): add registration rollback coverage
+docs: update authentication roadmap
+chore: update dependencies
 ```
-feat(auth): implement login endpoint
 
-fix(tasks): prevent duplicate assignments
+---
 
-docs: update roadmap
+## Feature Workflow
 
-refactor(storage): simplify upload service
+```text
+Plan
+ ↓
+Design
+ ↓
+Implement
+ ↓
+Test
+ ↓
+Review
+ ↓
+Document
+ ↓
+Commit
 ```
 
 ---
 
 ## Pull Request Checklist
 
-- Code compiles
-- Tests pass
-- Documentation updated
-- No hardcoded secrets
-- Reviewed before merge
+- [ ] Code compiles
+- [ ] `go test ./...` passes
+- [ ] Relevant integration tests pass
+- [ ] No hardcoded secrets
+- [ ] Error handling reviewed
+- [ ] Security implications reviewed
+- [ ] Documentation updated
+- [ ] Architecture decisions recorded if changed
+- [ ] Changes are focused and explainable

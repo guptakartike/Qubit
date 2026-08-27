@@ -1,116 +1,126 @@
-# ⚙️ Qubit Tech Stack
+# Qubit — Technology Stack
 
-This document describes the technologies used throughout the project and the reasoning behind each choice.
-
----
-
-# Frontend
-
-| Technology | Purpose |
-|------------|---------|
-| React | UI Library |
-| TypeScript | Type Safety |
-| Vite | Build Tool |
-| Tailwind CSS | Styling |
-| shadcn/ui | UI Components |
-| TanStack Query | Server State |
-| Zustand | Client State |
-| React Router | Routing |
+This document distinguishes what is **currently implemented** from what is **planned**.
 
 ---
 
-# Backend
+# Frontend — Planned
 
-| Technology | Purpose |
-|------------|---------|
-| Go | Backend Language |
-| Gin | HTTP Framework |
-| PostgreSQL | Primary Database |
-| Redis | Cache & Sessions |
-| sqlc *(planned)* | Type-safe SQL |
-| Goose | Database Migrations |
-
----
-
-# Storage
-
-| Technology | Purpose |
-|------------|---------|
-| MinIO | Object Storage |
-| S3 API | Storage Interface |
+| Technology | Purpose | Status |
+|---|---|---|
+| React | UI | Planned |
+| TypeScript | Type safety | Planned |
+| Vite | Build tool | Planned |
+| Tailwind CSS | Styling | Planned |
+| shadcn/ui | UI components | Planned |
+| TanStack Query | Server state | Planned |
+| Zustand | Client state | Planned |
+| React Router | Routing | Planned |
 
 ---
 
-# Infrastructure
+# Backend — Current
 
-| Technology | Purpose |
-|------------|---------|
-| Docker | Containerization |
-| Docker Compose | Local Development |
-| GitHub Actions | CI/CD |
-| Nginx *(later)* | Reverse Proxy |
+| Technology | Purpose | Status |
+|---|---|---|
+| Go | Backend language | Implemented |
+| Gin | HTTP framework | Implemented |
+| PostgreSQL | Primary database | Implemented |
+| pgx / pgxpool | PostgreSQL driver/pool | Implemented |
+| golang-migrate | Database migrations | Implemented |
+| Argon2id | Password hashing | Implemented |
+
+---
+
+# Backend — Planned
+
+| Technology | Purpose | Status |
+|---|---|---|
+| sqlc | Type-safe SQL generation | Planned / evaluate before adoption |
+| Redis | Caching/session-related infrastructure | Planned |
+| WebSockets | Realtime features | Planned |
+
+---
+
+# Storage — Planned
+
+| Technology | Purpose | Status |
+|---|---|---|
+| MinIO | Local object storage | Planned |
+| S3 API | Storage abstraction | Planned |
+
+---
+
+# Infrastructure — Planned
+
+| Technology | Purpose | Status |
+|---|---|---|
+| Docker | Containerization | Planned / local hardening later |
+| Docker Compose | Local multi-service environment | Planned |
+| GitHub Actions | CI | Planned |
+| Structured logging / `slog` | Application logging | Planned |
+| OpenAPI / Swagger | API documentation | Planned |
+| Nginx | Reverse proxy | Later, only if deployment requires it |
 
 ---
 
 # Testing
 
-| Technology | Purpose |
-|------------|---------|
-| Go Testing | Unit Testing |
-| Testcontainers | Integration Tests |
-| Vitest | Frontend Testing |
-| Playwright | End-to-End Testing |
-
----
-
-# API
-
-- REST
-- JSON
-- OpenAPI / Swagger
+| Technology | Purpose | Status |
+|---|---|---|
+| Go testing | Backend unit/integration tests | Implemented |
+| Testcontainers | Isolated integration environments | Planned / evaluate |
+| Vitest | Frontend tests | Planned |
+| Playwright | Browser E2E tests | Planned |
 
 ---
 
 # Authentication
 
-- JWT Access Tokens
-- Refresh Tokens
-- OAuth (Google)
-- Password Hashing (bcrypt/Argon2)
+Current:
+
+- Email/password
+- Argon2id
+- Password verification
+- Separate password credential table
+
+Planned:
+
+- Short-lived access tokens
+- Refresh tokens
+- Session management
+- Session revocation
+- Google OAuth
+- GitHub OAuth
+- Email verification
+- Password reset
 
 ---
 
-# Realtime
+# API
 
-- WebSockets
+Current:
 
----
+- REST
+- JSON
+- Versioned `/api/v1` paths
 
-# Logging & Monitoring
+Planned:
 
-- slog (Go)
-- OpenTelemetry *(later)*
-
----
-
-# Development Tools
-
-- Git
-- GitHub
-- VS Code
-- Postman / Bruno
-- Docker Desktop
+- OpenAPI / Swagger
 
 ---
 
-# Guiding Principles
+# Technology Selection Principles
 
-Technologies are chosen based on:
+Choose technologies based on:
 
 - Simplicity
-- Scalability
+- Correctness
+- Security
 - Maintainability
-- Production Readiness
-- Learning Value
+- Learning value
+- Demonstrable engineering depth
+- Actual project requirements
 
-Technology is never selected simply because it is popular.
+Do not add infrastructure merely to create the appearance of scale.

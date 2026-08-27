@@ -1,234 +1,148 @@
-# 🏗️ Qubit Project Structure
+# Qubit — Project Structure
 
-> This document defines the directory structure, module boundaries, and organizational principles used throughout the Qubit codebase.
-
----
-
-# Philosophy
-
-Qubit follows a **Modular Monolith** architecture.
-
-The codebase is organized around **business domains**, not technologies.
-
-Each module owns its:
-
-- API
-- Business Logic
-- Database Access
-- Models
-- Tests
-
-Modules should communicate through well-defined interfaces instead of directly accessing each other's internals.
+> The structure is organized around business capabilities rather than generic technical layers.
 
 ---
 
-# Repository Structure
+# Repository Structure — Target
 
-```
+```text
 qubit/
-
-├── frontend/
 ├── backend/
-
+├── frontend/
 ├── docs/
-│   ├── adr/
-│   ├── api/
-│   ├── database/
-│   ├── diagrams/
-│   └── meetings/
-
 ├── .github/
-│   ├── workflows/
-│   ├── ISSUE_TEMPLATE/
-│   └── PULL_REQUEST_TEMPLATE.md
-
 ├── README.md
-├── ROADMAP.md
-├── ARCHITECTURE.md
-├── PROJECT_STRUCTURE.md
-├── TECH_STACK.md
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-├── ENGINEERING.md
 ├── docker-compose.yml
 └── .env.example
 ```
 
 ---
 
-# Backend Structure
+# Backend — Current / Evolving Structure
 
-```
+```text
 backend/
-
 ├── cmd/
 │   └── api/
 │       └── main.go
-
 ├── internal/
-
 │   ├── auth/
-│   ├── organization/
-│   ├── workspace/
-│   ├── document/
-│   ├── task/
-│   ├── chat/
-│   ├── storage/
-│   ├── calendar/
-│   ├── notification/
-│   ├── search/
-│   └── ai/
-
-├── pkg/
-
-├── configs/
-
-├── database/
-
+│   │   ├── dto.go
+│   │   ├── validation.go
+│   │   ├── normalise.go
+│   │   ├── password.go
+│   │   ├── errors.go
+│   │   ├── password_test.go
+│   │   ├── service/
+│   │   │   ├── register.go
+│   │   │   └── register_test.go
+│   │   ├── repository/
+│   │   │   ├── repository.go
+│   │   │   ├── postgres.go
+│   │   │   └── postgres_test.go
+│   │   └── handler/
+│   │       └── register.go
+│   ├── database/
+│   └── server/
 ├── migrations/
-
-├── scripts/
-
-├── tests/
-
 └── go.mod
 ```
 
----
-
-# Module Structure
-
-Every module follows exactly the same layout.
-
-```
-workspace/
-
-├── handler.go
-├── service.go
-├── repository.go
-├── model.go
-├── dto.go
-├── routes.go
-├── errors.go
-└── tests/
-```
+The exact file list may evolve as the authentication module gains login, sessions, OAuth, and other capabilities.
 
 ---
 
-## Responsibility
+# Planned Backend Modules
 
-### handler.go
+```text
+auth
+organization
+workspace
+document
+task
+chat
+calendar
+storage
+notification
+search
+ai
+```
 
-- HTTP Requests
-- HTTP Responses
-- Validation
-- Status Codes
-
-No business logic.
+Only create a module when its feature is actually being implemented.
 
 ---
 
-### service.go
+# Module Responsibilities
 
-Contains business rules.
+## Handler
 
-Examples:
+HTTP adapter.
 
-- Create Workspace
-- Rename Workspace
-- Archive Workspace
+- Parse HTTP input
+- Call service
+- Map errors to HTTP
+- Serialize response
 
-Business logic belongs here.
+## Service
 
----
+Application/business logic.
 
-### repository.go
+- Rules
+- Validation coordination
+- Orchestration
+- Security-sensitive workflows
 
-Responsible for database operations.
+## Repository
 
-Examples:
+Persistence boundary.
 
-- Find Workspace
-- Save Workspace
-- Delete Workspace
+- SQL
+- Database queries
+- Transactions
+- Persistence-specific error translation
 
-Only SQL/database access.
+## DTOs
 
----
+API request/response shapes.
 
-### model.go
+## Domain / model types
 
-Contains domain models.
+Business entities and values where needed.
 
-Example:
+## Errors
 
-```
-Workspace
-Organization
-User
-```
-
----
-
-### dto.go
-
-Defines request and response objects.
-
-Example:
-
-```
-CreateWorkspaceRequest
-
-UpdateWorkspaceRequest
-
-WorkspaceResponse
-```
+Module-specific domain/application errors.
 
 ---
 
-### routes.go
+# Authentication Module Direction
 
-Registers HTTP routes.
+The authentication module is allowed to evolve beyond the initial registration structure.
 
-Example:
+Expected conceptual structure:
 
+```text
+auth/
+├── handler/
+├── service/
+├── repository/
+├── DTO/domain types
+├── validation
+├── password
+└── errors
 ```
-POST /workspaces
 
-GET /workspaces/:id
-```
+Do not force every module into an identical file structure if the real domain does not require it.
 
 ---
 
-### errors.go
+# Frontend — Planned
 
-Module-specific errors.
-
-Example:
-
-```
-WorkspaceNotFound
-
-WorkspaceAlreadyExists
-```
-
----
-
-### tests/
-
-Module-specific tests.
-
----
-
-# Frontend Structure
-
-```
+```text
 frontend/
-
 ├── public/
-
 ├── src/
-
 │   ├── app/
 │   ├── pages/
 │   ├── features/
@@ -240,281 +154,61 @@ frontend/
 │   ├── store/
 │   ├── utils/
 │   ├── types/
-│   ├── styles/
 │   └── assets/
-
-├── package.json
-
-└── vite.config.ts
+└── package.json
 ```
 
 ---
 
-# Feature Structure (Frontend)
-
-Every feature should remain self-contained.
-
-Example:
-
-```
-features/
-
-authentication/
-
-workspace/
-
-documents/
-
-tasks/
-
-chat/
-
-calendar/
-```
-
-Each feature may contain:
-
-```
-authentication/
-
-components/
-
-hooks/
-
-api/
-
-types/
-
-pages/
-
-utils/
-```
-
----
-
-# Shared Components
-
-Global reusable components belong here.
-
-```
-components/
-
-Button
-
-Modal
-
-Input
-
-Avatar
-
-Navbar
-
-Sidebar
-
-Loader
-```
-
----
-
-# API Layer
-
-The frontend never calls the backend directly from UI components.
-
-```
-services/
-
-auth.ts
-
-workspace.ts
-
-tasks.ts
-
-documents.ts
-```
-
-All HTTP requests originate from the service layer.
-
----
-
-# State Management
-
-Global application state:
-
-```
-store/
-```
-
-Server state:
-
-```
-TanStack Query
-```
-
-Local component state:
-
-```
-React useState()
-```
-
----
-
-# Documentation Structure
-
-```
-docs/
-
-adr/
-database/
-api/
-diagrams/
-meetings/
-```
-
----
-
-# Naming Conventions
-
-## Go
-
-Packages
-
-```
-workspace
-organization
-notification
-```
-
-Use lowercase.
-
----
-
-## Files
-
-```
-workspace_service.go
-
-workspace_repository.go
-
-workspace_handler.go
-```
-
-Use descriptive names.
-
----
-
-## React Components
-
-```
-WorkspaceCard.tsx
-
-Sidebar.tsx
-
-TaskModal.tsx
-```
-
-PascalCase.
-
----
-
-## Variables
-
-camelCase
-
-```
-workspaceID
-
-userRole
-
-taskStatus
-```
-
----
-
-## Constants
-
-UPPER_SNAKE_CASE
-
-```
-MAX_FILE_SIZE
-
-JWT_EXPIRATION
-```
+# Frontend Rules
+
+- UI components should not contain raw API calls.
+- Server state should use TanStack Query where appropriate.
+- Local state should remain local unless it has cross-component value.
+- Feature-specific code should remain close to its feature.
 
 ---
 
 # Module Communication
 
-Modules should never access another module's repository directly.
+Modules should not reach directly into another module's repository.
 
-Correct:
+Preferred:
 
-```
+```text
 Workspace Service
-
-↓
-
-Organization Service Interface
+       ↓
+Organization application interface
 ```
 
-Incorrect:
+Avoid:
 
-```
+```text
 Workspace Repository
-
-↓
-
+       ↓
 Organization Repository
 ```
 
-This keeps modules loosely coupled.
+This keeps business capabilities independently understandable.
 
 ---
 
 # Dependency Direction
 
-```
+```text
 Handler
-
-↓
-
+  ↓
 Service
-
-↓
-
+  ↓
 Repository
-
-↓
-
+  ↓
 Database
 ```
 
-Never reverse this dependency.
-
-Repositories should never call services.
-
----
-
-# General Rules
-
-- Keep modules independent.
-- One responsibility per package.
-- Business logic belongs in services.
-- Database logic belongs in repositories.
-- HTTP logic belongs in handlers.
-- Never expose database models directly to clients.
-- Prefer composition over inheritance.
-- Write tests alongside features.
-
----
-
-# Future Scalability
-
-The project structure is intentionally designed so that individual modules can later be extracted into independent microservices with minimal refactoring.
+Do not reverse this direction.
 
 ---
 
 # Guiding Principle
 
 > **Organize by business capability, not by technology.**
-
-The structure should make it immediately obvious **what the software does**, not just **how it is implemented**.
